@@ -1,0 +1,6 @@
+.git
+.openai
+.railway
+.env*
+node_modules
+README.md

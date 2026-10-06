@@ -13,3 +13,15 @@ Supabase must have the deployed account URL configured in Authentication → URL
 
 Live site: https://ai-assistant-your-helper.ellehelly-by.chatgpt.site/
 Application: https://github.com/hpt1mee/AI-assistant-Your-Helper
+
+## Railway
+
+The repository includes a dependency-free Node HTTP server and a Dockerfile. Railway detects the Dockerfile; the server listens on `0.0.0.0:$PORT` and exposes `/health` for the configured health check.
+
+1. In Railway, create a project from the GitHub repository `hpt1mee/AI-assistant-site`, branch `main`.
+2. Wait for the deployment to succeed, then generate a domain in Settings → Networking.
+3. Add `https://YOUR-RAILWAY-DOMAIN/account.html` to the Supabase project's Authentication → URL Configuration → Redirect URLs. Keep the existing URL while migrating. Existing accounts remain in the same Supabase project; users sign in again on the new domain.
+
+No Supabase secret/service-role key, SMTP password or model API key belongs in the website. The existing publishable Supabase key is public by design.
+
+For a local check, run `npm start` with Node 22 or newer. Only the public HTML, styles, scripts and assets are served; repository files and server configuration are not exposed.
