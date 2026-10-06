@@ -35,3 +35,12 @@ body{isolation:isolate}.background-trails svg{width:100%;height:100%;overflow:vi
 .trail-three{stroke:#ce7df7;animation-delay:-9s;animation-duration:21s;opacity:.2}
 @keyframes draw-trail{from{stroke-dashoffset:1680}to{stroke-dashoffset:-1680}}
 @media(prefers-reduced-motion:reduce){.trail{stroke-dasharray:none;opacity:.09;animation:none}}
+
+@media(hover:hover) and (pointer:fine){
+.feature-card{overflow:hidden}.feature-card:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;background:radial-gradient(circle at var(--pointer-x,50%) var(--pointer-y,50%),#a58aff24,transparent 55%);transition:opacity .3s}.feature-card:hover:after{opacity:1}
+.feature-icon{transition:transform .35s,background .35s,box-shadow .35s}.feature-card:hover .feature-icon{transform:rotate(-7deg) scale(1.08);background:#3a2854;box-shadow:0 0 24px #a58aff30}
+.brand img{transition:transform .4s}.brand:hover img{transform:rotate(-12deg) scale(1.08)}
+.nav nav a{position:relative}.nav nav a:after{content:'';position:absolute;left:0;right:0;bottom:-6px;height:2px;background:var(--violet);transform:scaleX(0);transform-origin:left;transition:transform .25s}.nav nav a:hover:after{transform:scaleX(1)}
+.gallery-tabs button:hover{background:#352548;border-color:#a58aff;color:#fff}.mini-indicators i{transition:transform .3s}.mini-indicators i:hover{transform:translateY(-5px) rotate(-5deg)}
+.faq summary{transition:color .2s,padding .2s}.faq summary:hover{color:var(--violet);padding-left:7px}.account-tabs button:hover,.account-logout:hover{background:#352548;border-color:#a58aff}
+}

@@ -46,3 +46,14 @@ if (!motionPreference.matches && 'IntersectionObserver' in window) {
     }
   });
 }
+
+if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+ document.querySelectorAll('.feature-card').forEach(card => {
+  card.addEventListener('pointermove', event => {
+   if (motionPreference.matches) return;
+   const bounds = card.getBoundingClientRect();
+   card.style.setProperty('--pointer-x', `${event.clientX - bounds.left}px`);
+   card.style.setProperty('--pointer-y', `${event.clientY - bounds.top}px`);
+  });
+ });
+}
