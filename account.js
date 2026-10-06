@@ -49,7 +49,7 @@ $('account-form').addEventListener('submit',async event=>{
     const data = await api(path,payload);
     $('message').textContent = '';
     if (data.refresh_token) save(data);
-    else $('message').textContent = 'Проверь почту и подтверди email. Затем вернись сюда и войди. Если аккаунт уже существует, используй вкладку «Вход».';
+    else { lock(false); setMode('login'); $('message').textContent = 'Письмо отправлено. Открой его и нажми «Подтвердить email». После подтверждения войди здесь со своим паролем. Если аккаунт уже существует, просто войди.'; }
   } catch(error) { $('message').textContent = error instanceof TypeError ? 'Нет соединения. Проверь интернет и повтори попытку.' : error.message; }
   finally { $('password').value=''; lock(false); }
 });
@@ -67,5 +67,30 @@ async function restore() {
   catch(error) { if([400,401,403].includes(error.status)) clear(); $('message').textContent='Не удалось восстановить вход. Проверь соединение или войди снова.'; }
   finally { lock(false); }
 }
-// Do not accept session tokens supplied in URL fragments or query parameters.
-restore();
+// A confirmation link never signs the browser into a URL-supplied session.
+// Verify its access token with Auth, then require the user's password to log in.
+async function handleConfirmation() {
+  const fragment = new URLSearchParams(location.hash.slice(1));
+  const query = new URLSearchParams(location.search);
+  const token = fragment.get('access_token');
+  const error = fragment.get('error') || query.get('error');
+  const type = fragment.get('type');
+  if (!token && !error) { await restore(); return; }
+  history.replaceState(null, '', location.pathname);
+  clear(); lock(true);
+  try {
+    if (error) throw new Error('Ссылка устарела или уже использована. Попробуй войти: если email подтверждён, аккаунт уже готов.');
+    if (!['signup','email'].includes(type)) throw new Error('Эта ссылка не предназначена для подтверждения регистрации. Войди с email и паролем.');
+    $('message').textContent = 'Проверяю подтверждение почты…';
+    const response = await fetch(AUTH_URL + 'user', {headers:{apikey:PUBLIC_KEY,Authorization:'Bearer '+token}});
+    if (!response.ok) throw new Error('Не удалось проверить ссылку. Попробуй войти со своим паролем.');
+    const user = await response.json();
+    if (!user.email_confirmed_at) throw new Error('Email пока не подтверждён. Открой последнее письмо.');
+    $('email').value = user.email || '';
+    $('form-title').textContent = 'Почта подтверждена ✓';
+    $('message').textContent = 'Аккаунт готов. Введи свой пароль и нажми «Войти». Этот же аккаунт работает в приложении.';
+    $('password').focus();
+  } catch(error) { $('message').textContent = error instanceof TypeError ? 'Не удалось подключиться. Попробуй войти снова.' : error.message; }
+  finally { lock(false); }
+}
+handleConfirmation();
